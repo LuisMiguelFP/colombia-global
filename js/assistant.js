@@ -145,11 +145,13 @@ const AssistantController = {
 
     AssistantModel.recognition.onerror = (e) => {
       console.error('Speech recognition error:', e.error);
-      if (e.error !== "no-speech" && e.error !== "audio-capture" && e.error !== "network") {
-        AssistantView.addMessage("assistant", "⚠ Error al escuchar: " + e.error);
-      }
       AssistantModel.isListening = false;
       AssistantView.setVoiceListening(false);
+      if (e.error === "network") {
+        AssistantView.addMessage("assistant", "⚠ Error de red en reconocimiento de voz. Verifica tu conexión a internet.");
+      } else if (e.error !== "no-speech" && e.error !== "audio-capture") {
+        AssistantView.addMessage("assistant", "⚠ Error al escuchar: " + e.error);
+      }
     };
 
     AssistantModel.recognition.onend = () => {
