@@ -119,6 +119,11 @@ const AssistantController = {
 
   startListening() {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) {
+      AssistantView.addMessage("assistant", "⚠ Tu navegador no soporta voz. Usa Chrome.");
+      return;
+    }
+
     AssistantModel.recognition = new SR();
     AssistantModel.recognition.lang = "es-CO";
     AssistantModel.recognition.continuous = true;
@@ -145,9 +150,10 @@ const AssistantController = {
     };
 
     AssistantModel.recognition.onerror = (e) => {
+      console.error('Speech recognition error:', e.error);
       if (e.error !== "no-speech" && e.error !== "audio-capture") {
         this.stopListening();
-        AssistantView.addMessage("assistant", "⚠ Error al escuchar. Intenta de nuevo.");
+        AssistantView.addMessage("assistant", "⚠ Error al escuchar: " + e.error);
       }
     };
 
@@ -161,7 +167,12 @@ const AssistantController = {
       }
     };
 
-    AssistantModel.recognition.start();
+    try {
+      AssistantModel.recognition.start();
+    } catch (err) {
+      console.error('Error starting recognition:', err);
+      AssistantView.addMessage("assistant", "⚠ Error al iniciar reconocimiento de voz.");
+    }
   },
 
   stopListening() {
