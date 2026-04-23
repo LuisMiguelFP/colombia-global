@@ -124,12 +124,14 @@ const AssistantController = {
       return;
     }
 
+    if (AssistantModel.recognition) {
+      AssistantModel.recognition.stop();
+    }
+
     AssistantModel.recognition = new SR();
     AssistantModel.recognition.lang = "es-CO";
-    AssistantModel.recognition.continuous = true;
-    AssistantModel.recognition.interimResults = true;
-
-    let finalTranscript = '';
+    AssistantModel.recognition.continuous = false;
+    AssistantModel.recognition.interimResults = false;
 
     AssistantModel.recognition.onstart = () => {
       AssistantModel.isListening = true;
@@ -137,24 +139,17 @@ const AssistantController = {
     };
 
     AssistantModel.recognition.onresult = (e) => {
-      let interimTranscript = '';
-      for (let i = e.resultIndex; i < e.results.length; i++) {
-        const transcript = e.results[i][0].transcript;
-        if (e.results[i].isFinal) {
-          finalTranscript += transcript;
-        } else {
-          interimTranscript += transcript;
-        }
-      }
-      document.getElementById("chatInput").value = finalTranscript + interimTranscript;
+      const transcript = e.results[0][0].transcript;
+      document.getElementById("chatInput").value = transcript;
     };
 
     AssistantModel.recognition.onerror = (e) => {
       console.error('Speech recognition error:', e.error);
       if (e.error !== "no-speech" && e.error !== "audio-capture" && e.error !== "network") {
-        this.stopListening();
         AssistantView.addMessage("assistant", "⚠ Error al escuchar: " + e.error);
       }
+      AssistantModel.isListening = false;
+      AssistantView.setVoiceListening(false);
     };
 
     AssistantModel.recognition.onend = () => {
@@ -163,7 +158,8 @@ const AssistantController = {
         if (input.value.trim()) {
           this.sendMessage();
         }
-        this.stopListening();
+        AssistantModel.isListening = false;
+        AssistantView.setVoiceListening(false);
       }
     };
 
