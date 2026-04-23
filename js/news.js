@@ -270,11 +270,7 @@ const NewsController = {
 
       const query = queries[Math.floor(Math.random() * queries.length)];
 
-      const url =
-        `${CONFIG.NEWS_URL}?q=${encodeURIComponent(query)}` +
-        `&language=es&sortBy=publishedAt&pageSize=20&apiKey=${CONFIG.NEWS_API_KEY}`;
-
-      const res = await fetch(url);
+      const res = await fetch(`/api/news?query=${encodeURIComponent(query)}`);
       const data = await res.json();
 
       if (data.status !== "ok" || !data.articles?.length) {
