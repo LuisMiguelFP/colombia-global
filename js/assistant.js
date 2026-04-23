@@ -3,9 +3,17 @@ const AssistantModel = {
   chatHistory: [],
   isListening: false,
   recognition: null,
+  maxHistory: 10,
 
   addToHistory(role, content) {
-    this.chatHistory.push({ role, content });
+    this.chatHistory.push({ role, content: String(content) });
+    if (this.chatHistory.length > this.maxHistory) {
+      this.chatHistory = this.chatHistory.slice(-this.maxHistory);
+    }
+  },
+
+  clearHistory() {
+    this.chatHistory = [];
   }
 };
 
@@ -180,17 +188,14 @@ const AssistantController = {
       const messages = [
         {
           role: "system",
-          content: `Eres un asistente especializado en noticias mundiales y su impacto en Colombia.
-          Responde siempre en español colombiano, de forma clara y directa.
-          Cuando pregunten qué va a subir de precio, explica: qué productos, por qué y cuánto aproximadamente.
-          Sé conciso. Máximo 3-4 oraciones. Sin markdown complejo.`
+          content: "Eres un asistente especializado en noticias mundiales y su impacto en Colombia. Responde siempre en español colombiano, de forma clara y directa. Máximo 3-4 oraciones."
         },
-        ...AssistantModel.chatHistory
+        ...AssistantModel.chatHistory.slice(-6)
       ];
 
       const res = await fetch(CONFIG.API_URL, {
         method: "POST",
-        headers: CONFIG.HEADERS,
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           model: CONFIG.MODEL,
           messages: messages,
@@ -198,13 +203,15 @@ const AssistantController = {
           max_tokens: 300
         })
       });
+      });
 
       const data = await res.json();
       AssistantView.removeTyping();
 
       if (data.error) {
         console.error("Groq API Error:", data.error);
-        AssistantView.addMessage("assistant", "⚠ Error: " + (data.error.message || "API key inválida"));
+        AssistantModel.clearHistory();
+        AssistantView.addMessage("assistant", "⚠ Error: " + (data.error.message || "API key inválida o modelo no soportado"));
         return;
       }
 
