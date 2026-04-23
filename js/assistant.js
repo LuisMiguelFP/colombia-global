@@ -203,7 +203,6 @@ const AssistantController = {
           max_tokens: 300
         })
       });
-      });
 
       const data = await res.json();
       AssistantView.removeTyping();
