@@ -174,7 +174,11 @@ const AssistantController = {
   stopListening() {
     AssistantModel.isListening = false;
     if (AssistantModel.recognition) {
-      AssistantModel.recognition.stop();
+      try {
+        AssistantModel.recognition.stop();
+      } catch(e) {
+        console.error('Error stopping recognition:', e);
+      }
       AssistantModel.recognition = null;
     }
     AssistantView.setVoiceListening(false);
