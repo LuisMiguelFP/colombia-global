@@ -151,7 +151,7 @@ const AssistantController = {
 
     AssistantModel.recognition.onerror = (e) => {
       console.error('Speech recognition error:', e.error);
-      if (e.error !== "no-speech" && e.error !== "audio-capture") {
+      if (e.error !== "no-speech" && e.error !== "audio-capture" && e.error !== "network") {
         this.stopListening();
         AssistantView.addMessage("assistant", "⚠ Error al escuchar: " + e.error);
       }
