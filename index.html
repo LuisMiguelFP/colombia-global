@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Colombia Global — Pulso Mundial</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=IBM+Plex+Sans:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      window.GROQ_API_KEY = '%GROQ_API_KEY%';
+      window.NEWS_API_KEY = '%NEWS_API_KEY%';
+      window.ALPHA_KEY = '%ALPHA_KEY%';
+    </script>
+  </head>
+<body>
+
+<header>
+  <div class="logo">
+    <span>🇨🇴</span>
+    Colombia <span>Global</span>
+  </div>
+  <div class="header-right">
+    <div class="live-badge">
+      <div class="live-dot"></div>
+      Pulso en vivo
+    </div>
+    <button class="refresh-btn" onclick="NewsController.load()">↻ Actualizar</button>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- NOTICIAS -->
+  <div>
+    <div class="section-label">Impacto mundial → Colombia</div>
+    <div class="news-grid" id="newsGrid">
+      <div class="loading-card">
+        <div class="skeleton" style="height:12px;width:30%"></div>
+        <div class="skeleton" style="height:20px;width:80%"></div>
+        <div class="skeleton" style="height:14px;width:100%"></div>
+        <div class="skeleton" style="height:14px;width:70%"></div>
+      </div>
+      <div class="loading-card">
+        <div class="skeleton" style="height:12px;width:25%"></div>
+        <div class="skeleton" style="height:20px;width:90%"></div>
+        <div class="skeleton" style="height:14px;width:100%"></div>
+        <div class="skeleton" style="height:14px;width:60%"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+
+    <!-- PRECIOS -->
+    <div class="prices-panel">
+      <div class="panel-header">⚠ Lo que sube de precio</div>
+      <div id="pricesContainer"></div>
+    </div>
+
+    <!-- GRÁFICOS -->
+    <div class="charts-panel">
+      <div class="panel-header">📊 Análisis de precios</div>
+      <div class="chart-controls">
+        <button class="chart-prod-btn active" data-prod="Dólar (TRM)" onclick="ChartsController.setProducto('Dólar (TRM)')">Dólar</button>
+        <button class="chart-prod-btn" data-prod="Gasolina" onclick="ChartsController.setProducto('Gasolina')">Gasolina</button>
+        <button class="chart-prod-btn" data-prod="Alimentos" onclick="ChartsController.setProducto('Alimentos')">Alimentos</button>
+      </div>
+      <div class="chart-controls">
+        <button class="chart-period-btn active" data-period="meses" onclick="ChartsController.setPeriodo('meses')">Meses</button>
+        <button class="chart-period-btn" data-period="años" onclick="ChartsController.setPeriodo('años')">Años</button>
+      </div>
+      <div class="chart-container">
+        <canvas id="chartCanvas"></canvas>
+        <div class="chart-loading" id="chartLoading">
+          <div class="skeleton" style="height:200px"></div>
+        </div>
+      </div>
+      <div class="chart-controls" style="margin-top:10px">
+        <button class="chart-prod-btn" onclick="ChartsController.renderPie()">Ver Gráfico Circular</button>
+      </div>
+      <div class="chart-container" id="pieChartContainer" style="display:none;margin-top:10px">
+        <canvas id="pieChartCanvas"></canvas>
+      </div>
+    </div>
+
+    <!-- SIMULADOR DE INVERSIÓN -->
+    <div class="simulator-panel">
+      <div class="panel-header">💹 Simulador de Inversión</div>
+      <div class="sim-controls">
+        <select id="simAsset" class="sim-select">
+          <option value="EC">Ecopetrol (EC)</option>
+          <option value="GV">Grupo Aval (GV)</option>
+          <option value="AV">Avianca (AV)</option>
+          <option value="USD">Dólar TRM</option>
+        </select>
+        <input type="number" id="simAmount" class="sim-input" placeholder="Monto COP" value="1000000">
+        <button class="sim-btn" onclick="SimulatorController.simulate()">Simular</button>
+      </div>
+      <div id="simResult" class="sim-result"></div>
+      <div class="sim-prediction" id="simPrediction"></div>
+    </div>
+
+    <!-- ASISTENTE -->
+    <div class="assistant-panel">
+      <div class="assistant-header">
+        <span class="assistant-title">🤖 Asistente IA</span>
+        <span class="model-badge" id="modelBadge">Modelo: llama-3.3-70b-versatile</span>
+        <span class="voice-status" id="voiceStatus">Listo</span>
+      </div>
+
+      <div class="chat-window" id="chatWindow">
+        <div class="msg assistant">
+          <div class="msg-bubble">
+            Hola 👋 Soy tu asistente de noticias. Puedo explicarte cómo los eventos mundiales afectan a Colombia. ¿Qué quieres saber hoy?
+          </div>
+          <div class="msg-time">ahora</div>
+        </div>
+      </div>
+
+      <div class="input-area">
+        <div class="text-row">
+          <input type="text" class="chat-input" id="chatInput" placeholder="Pregunta algo..." />
+          <button class="send-btn" id="sendBtn" onclick="AssistantController.sendMessage()">→</button>
+        </div>
+        <button class="voice-btn" id="voiceBtn" onclick="AssistantController.toggleVoice()">
+          <span id="voiceBtnContent">🎙 Hablar con el asistente</span>
+        </button>
+        <button class="voice-btn stop-btn" id="stopVoiceBtn" onclick="AssistantController.stopListening()" style="display:none;background:var(--red)">
+          ⏹ Detener grabación
+        </button>
+      </div>
+
+      <div class="quick-questions">
+        <div class="quick-label">Preguntas rápidas</div>
+        <button class="quick-btn" onclick="AssistantController.askQuick('¿Qué va a subir de precio en Colombia este mes?')">¿Qué va a subir de precio?</button>
+        <button class="quick-btn" onclick="AssistantController.askQuick('¿Cómo afecta la guerra en Ucrania a Colombia?')">¿Cómo afecta la guerra en Ucrania?</button>
+        <button class="quick-btn" onclick="AssistantController.askQuick('¿Por qué sube el dólar en Colombia?')">¿Por qué sube el dólar?</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- SCRIPTS: el orden importa -->
+<script src="js/config.js"></script>
+<script src="js/prices.js"></script>
+<script src="js/assistant.js"></script>
+<script src="js/news.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/simulator.js"></script>
+
+<script>
+  // ─── INICIO ──────────────────────────────────────────────────────────────
+  window.speechSynthesis && speechSynthesis.getVoices();
+  PricesController.init();
+  AssistantController.init();
+  NewsController.load();
+  ChartsController.init();
+</script>
+
+</body>
+</html>
+```
+
