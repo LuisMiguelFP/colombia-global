@@ -18,7 +18,7 @@ const NewsModel = {
       destacada: false
     },
     {
-      titulo: "El Niño intenso arrasa cultivos en Sudamérica: escasez de alimentos se acerca",
+      titulo: "El Niño intenso arasa cultivos en Sudamérica: escasez de alimentos se acerca",
       region: "CLIMA",
       impacto: "ALTO",
       impacto_colombia: "Sequías en la Costa Atlántica y el Meta reducen cosechas de arroz y maíz.",
@@ -31,6 +31,94 @@ const NewsModel = {
       impacto: "MEDIO",
       impacto_colombia: "Los caficultores del Eje Cafetero verán sus ingresos reducidos.",
       tags: ["Café", "FNC", "Exportaciones"],
+      destacada: false
+    },
+    {
+      titulo: "Inflación en Colombia se ubica en 9.28% anual, superando expectativas",
+      region: "ECONOMÍA",
+      impacto: "ALTO",
+      impacto_colombia: "El costo de vida sigue elevado, afectando el poder adquisitivo de los colombianos.",
+      tags: ["Inflación", "DANE", "Economía"],
+      destacada: false
+    },
+    {
+      titulo: "Ecopetrol anuncia nueva inversión en proyectos de energía límpia",
+      region: "ECONOMÍA",
+      impacto: "MEDIO",
+      impacto_colombia: "Se espera la creación de nuevos empleos en el sector energético colombiano.",
+      tags: ["Ecopetrol", "Energía", "Empleo"],
+      destacada: false
+    },
+    {
+      titulo: "Dólar supera los $4,200 pesos tras declaraciones de la Fed",
+      region: "ECONOMÍA",
+      impacto: "ALTO",
+      impacto_colombia: "Las importaciones serán más costosas, afectando precios de electrodomésticos y tecnología.",
+      tags: ["Dólar", "TRM", "Importaciones"],
+      destacada: false
+    },
+    {
+      titulo: "Aumento en el precio de los fertilizantes impacta al sector agrícola",
+      region: "ECONOMÍA",
+      impacto: "MEDIO",
+      impacto_colombia: "Los agricultores enfrentan mayores costos de producción que se trasladarán al consumidor.",
+      tags: ["Agricultura", "Fertilizantes", "Precios"],
+      destacada: false
+    },
+    {
+      titulo: "La bolsa colombiana cae por tensiones geopolíticas internacionales",
+      region: "ECONOMÍA",
+      impacto: "MEDIO",
+      impacto_colombia: "Inversores pierden confianza, afectando fondos de pensiones y ahorros.",
+      tags: ["Bolsa", "Colcap", "Inversión"],
+      destacada: false
+    },
+    {
+      titulo: "Sequía en el canal de Panamá afecta exportaciones colombianas",
+      region: "COMERCIO",
+      impacto: "MEDIO",
+      impacto_colombia: "Fletes marítimos más caros y retrasos en envíos de flores, café y banano.",
+      tags: ["Canal de Panamá", "Exportaciones", "Fletes"],
+      destacada: false
+    },
+    {
+      titulo: "Gobierno anuncia subsidios para mitigar el alto costo de vida",
+      region: "ECONOMÍA",
+      impacto: "MEDIO",
+      impacto_colombia: "Familias de menores ingresos recibirán apoyo directo para alimentos.",
+      tags: ["Gobierno", "Subsidios", "Ayuda social"],
+      destacada: false
+    },
+    {
+      titulo: "Aumentan casos de desnutrición infantil por alza de precios de alimentos",
+      region: "CLIMA",
+      impacto: "ALTO",
+      impacto_colombia: "Programas de alimentación escolar enfrentan crisis presupuestal en varias regiones.",
+      tags: ["Desnutrición", "Salud", "Alimentos"],
+      destacada: false
+    },
+    {
+      titulo: "Nuevas restricciones de visas afectan turismo y negocios en Colombia",
+      region: "COMERCIO",
+      impacto: "BAJO",
+      impacto_colombia: "Menos turistas extranjeros visitarán Colombia, afectando hotelería y comercio.",
+      tags: ["Visas", "Turismo", "Migración"],
+      destacada: false
+    },
+    {
+      titulo: "Cafeteros se adaptan al cambio climático con variedades resistentes",
+      region: "CLIMA",
+      impacto: "MEDIO",
+      impacto_colombia: "Innovación en el campo ayuda a mantener la producción cafetera nacional.",
+      tags: ["Café", "Cambio climático", "Innovación"],
+      destacada: false
+    },
+    {
+      titulo: "Colombia aumenta exportaciones de aguacate a Europa y Asia",
+      region: "COMERCIO",
+      impacto: "MEDIO",
+      impacto_colombia: "Los agricultores colombianos diversifican sus mercados internacionales.",
+      tags: ["Aguacate", "Exportaciones", "Agricultura"],
       destacada: false
     }
   ],
@@ -184,7 +272,7 @@ const NewsController = {
 
       const url =
         `${CONFIG.NEWS_URL}?q=${encodeURIComponent(query)}` +
-        `&language=es&sortBy=publishedAt&pageSize=6&apiKey=${CONFIG.NEWS_API_KEY}`;
+        `&language=es&sortBy=publishedAt&pageSize=20&apiKey=${CONFIG.NEWS_API_KEY}`;
 
       const res = await fetch(url);
       const data = await res.json();
@@ -195,7 +283,7 @@ const NewsController = {
 
       const noticias = data.articles
         .filter(a => a.title)
-        .slice(0, 12)
+        .slice(0, 15)
         .map((art, i) => {
           const { region, impacto } = NewsModel.clasificar(art.title);
 
